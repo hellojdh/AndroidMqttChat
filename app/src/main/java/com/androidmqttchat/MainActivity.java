@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void connectMqtt() throws Exception{
-        mqttClient = new MqttClient("tcp://nola.ga:1883", MqttClient.generateClientId(), null);
+        mqttClient = new MqttClient("tcp://MQTT Broker Address:1883", MqttClient.generateClientId(), null);
         mqttClient.connect();
         mqttClient.subscribe(TOPIC);
         mqttClient.setCallback(new MqttCallback() {
