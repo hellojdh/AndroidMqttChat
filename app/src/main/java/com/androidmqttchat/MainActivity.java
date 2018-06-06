@@ -20,10 +20,12 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
-    static final String TOPIC = "topic";
     static final String TAG = MainActivity.class.getSimpleName();
+    static final String TOPIC = "topic";
+
     private ChatAdapter chatAdapter;
     private MqttClient mqttClient;
+
     @BindView(R.id.chatList)
     ListView chatListView;
 
@@ -31,16 +33,16 @@ public class MainActivity extends AppCompatActivity {
     EditText chatEditText;
 
     @OnClick(R.id.chatSendButton)
-    void sendChat(){
+    public void sendChat(){
+        String id = "ExId";
         String content = chatEditText.getText().toString();
-        if(content.equals("")){
-
-        }else{
-            JSONObject obj = new JSONObject();
+        if(content.equals("")){ }
+        else{
+            JSONObject json = new JSONObject();
             try{
-                obj.put("id","예제ID");
-                obj.put("content",content);
-                mqttClient.publish(TOPIC,new MqttMessage(obj.toString().getBytes()));
+                json.put("id",id);
+                json.put("content",content);
+                mqttClient.publish(TOPIC,new MqttMessage(json.toString().getBytes()));
             }catch (Exception e){}
             chatEditText.setText("");
         }
@@ -69,10 +71,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG,"Mqtt ReConnect");
                 try{connectMqtt();}catch(Exception e){Log.d(TAG,"MqttReConnect Error");}
             }
-
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
-                if(topic.equals(TOPIC)) {
                     JSONObject json = new JSONObject(new String(message.getPayload(), "UTF-8"));
                     chatAdapter.add(new ChatItem(json.getString("id"), json.getString("content")));
                     runOnUiThread(new Runnable() {
@@ -81,9 +81,7 @@ public class MainActivity extends AppCompatActivity {
                             chatAdapter.notifyDataSetChanged();
                         }
                     });
-                }
             }
-
             @Override
             public void deliveryComplete(IMqttDeliveryToken token) {
 
